@@ -1,0 +1,18 @@
+<style type="text/css">
+/*<![CDATA[*/
+<!--
+body { font-family:"Tahoma,Arial,Helvetica,Sans Serif"; font-size:8pt; }
+td {  font-size:8pt; text-align: right; white-space: nowrap; }
+th {  font-size:8pt; text-align: left; font-weight: normal; }
+.CH { text-align: right; font-weight:bold; }
+.CHL { text-align: left; font-weight:bold; }
+.BIG { font-size:10pt; font-weight:bold; text-align: center; }
+.TAB { font-size:10pt;  text-align: center; color:#CCCCCC; }
+.SELTAB { font-size:10pt; font-weight:bold; text-align: center; color:#C74200; }
+.good { color:#006600; }
+.bad { color:#880000; }
+.neut { color:#000088; }
+a:active { background-color:#DDDDFF; }
+-->
+/*]]>*/
+</style>
