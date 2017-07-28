@@ -22,13 +22,14 @@ import org.w3c.tidy.Tidy;
 
 public class HTMLToXHTMLConverter {
 	
-	public static ArrayList<String> inputHTMLFileList = new ArrayList<String>();
-	public static ArrayList<String> outputHTMLFileList = new ArrayList<String>();
+	public static ArrayList<String> inputHTMLFileList;
+	public static ArrayList<String> outputHTMLFileList;
 	public static String inputHTMLParentFolder = "";
 	
 	public static void getinputHTMLFileList(String dir) throws FileNotFoundException {
 
 		System.out.println("Loading HTML report files... ");
+		inputHTMLFileList = new ArrayList<String>();
 		File folder = new File(dir);
 		inputHTMLParentFolder = folder.getName();
 		for (File item: folder.listFiles()) {
@@ -66,7 +67,7 @@ public class HTMLToXHTMLConverter {
         
         // Inject CSS into the newly created XHTML file
         String fileContent = IOUtils.toString(new FileInputStream(outputFilePath), "UTF-8");
-        String cssString = IOUtils.toString(HTMLToXHTMLConverter.class.getResourceAsStream("../config/css.txt"), "UTF-8");
+        String cssString = IOUtils.toString(HTMLToXHTMLConverter.class.getResourceAsStream("css.txt"), "UTF-8");
         fileContent = fileContent.replaceAll("(?s)<style type=\"text/css\">(.+)</style>", cssString); // match new lines
         //fileContent = fileContent.replaceAll("style='display: none'", ""); 
         IOUtils.write(fileContent, new FileOutputStream(outputFilePath), "UTF-8");

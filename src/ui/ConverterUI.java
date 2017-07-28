@@ -2,10 +2,13 @@ package ui;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import main.PDFConverter;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
@@ -29,6 +32,10 @@ public class ConverterUI {
     protected Shell converterShell;
     private Text sourceFolderText;
     private Text targetFolderText;
+    
+    private static String homeDir = System.getProperty("user.home");
+    private static String defaultOutputDirFilePath = homeDir + "/html2pdf.prop";
+    private static String defaultOutputDir; 
 
 	/**
 	 * Launch the application.
@@ -36,6 +43,12 @@ public class ConverterUI {
 	 */
 	public static void main(String[] args) {
 		try {
+			// Set default output directory
+			defaultOutputDir = homeDir + "\\Desktop";
+			if (new File(defaultOutputDirFilePath).exists()) {
+				String cachedPath = IOUtils.toString(new FileInputStream(defaultOutputDirFilePath), "UTF-8");
+				if (new File(cachedPath).exists()) defaultOutputDir = cachedPath;
+			}
 			ConverterUI window = new ConverterUI();
 			window.open();
 		} catch (Exception e) {
@@ -102,6 +115,7 @@ public class ConverterUI {
 		
 		targetFolderText = new Text(convertComposite, SWT.BORDER);
 		targetFolderText.setBounds(47, 233, 410, 26);
+		targetFolderText.setText(defaultOutputDir);
 		
 		Button btnSourceDirBrowse = new Button(convertComposite, SWT.NONE);
 		btnSourceDirBrowse.setBounds(489, 141, 90, 30);
@@ -111,7 +125,6 @@ public class ConverterUI {
 				DirectoryDialog dialog = new DirectoryDialog(converterShell, SWT.NULL); 
 				String path = dialog.open();
 				if (path != null) sourceFolderText.setText(path);
-				System.out.println(sourceFolderText.getText());
 			}
 		});
 		
@@ -123,6 +136,12 @@ public class ConverterUI {
 				DirectoryDialog dialog = new DirectoryDialog(converterShell, SWT.NULL); 
 				String path = dialog.open();
 				if (path != null) targetFolderText.setText(path);
+				// set as default
+				try {
+					IOUtils.write(path, new FileOutputStream(defaultOutputDirFilePath), "UTF-8");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		
@@ -142,6 +161,11 @@ public class ConverterUI {
 				if (sourceFolderText.getText() == "" || targetFolderText.getText() == "") {
 					showWarning("Please make sure source and destination folders are selected.");
 				}
+				
+				else if (! new File(sourceFolderText.getText()).exists() || ! new File(targetFolderText.getText()).exists()) {
+					showWarning("Please make sure both the source folder and destination folder exist.");
+				}
+				
 				else {
 					btnConvert.setEnabled(false);
 					labelProgress.setText("Conversion in progress...");
@@ -160,13 +184,16 @@ public class ConverterUI {
 						showError("The program encountered an error. Please contact the author." 
 								+ "\n\nException Message: \n" 
 								+ excep.getMessage());
+						excep.printStackTrace();
+						System.exit(1);
 					} finally {
 						btnConvert.setEnabled(true);
-						labelProgress.setText("Completed.");
+						labelProgress.setText("");
 					}
 					
 					try {
-						Desktop.getDesktop().open(new File(PDFConverter.outputFolder));
+						if (new File(PDFConverter.outputFolder).exists()) Desktop.getDesktop().open(new File(PDFConverter.outputFolder));
+						PDFConverter.outputFolder = ""; // reset
 					} catch (IOException e1) {
 						showWarning("The conversion is completed, but the program is unable to open the destination folder.");
 					}

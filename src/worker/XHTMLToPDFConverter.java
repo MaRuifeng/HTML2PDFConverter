@@ -25,7 +25,7 @@ import com.lowagie.text.DocumentException;
 
 public class XHTMLToPDFConverter {
 	
-	public static ArrayList<String> outputFileList = new ArrayList<String>();
+	public static ArrayList<String> outputPDFFileList;
 	
 	public String convertToPDF(String inputFilePath, String outputFileDir) throws IOException, DocumentException {
 		File inputFile = new File(inputFilePath);

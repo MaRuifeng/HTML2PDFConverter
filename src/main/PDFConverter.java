@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.lowagie.text.DocumentException;
 
@@ -32,6 +33,7 @@ public class PDFConverter {
 	public void convert (String inputDir, String outputDir) throws IOException, DocumentException, FileNotFoundException {
 		// Convert HTML to XHTML
 	    HTMLToXHTMLConverter.getinputHTMLFileList(inputDir);
+	    HTMLToXHTMLConverter.outputHTMLFileList = new ArrayList<String>();
 		HTMLToXHTMLConverter xhtmlConverter = new HTMLToXHTMLConverter(); 
 		for (String htmlFilePath: HTMLToXHTMLConverter.inputHTMLFileList) {
 			HTMLToXHTMLConverter.outputHTMLFileList.add(xhtmlConverter.convertToXHTML(htmlFilePath));
@@ -41,6 +43,7 @@ public class PDFConverter {
 		XHTMLToPDFConverter pdfConverter = new XHTMLToPDFConverter();
 		outputFolder = outputDir + "/" + HTMLToXHTMLConverter.inputHTMLParentFolder + "_PDF";
 		new File(outputFolder).mkdir();
+		XHTMLToPDFConverter.outputPDFFileList = new ArrayList<String>();
 		for (String xhtmlFilePath: HTMLToXHTMLConverter.outputHTMLFileList) {
 			if (xhtmlFilePath.contains("trades.xhtml")) {
 				// too many data entries, convert to CSV
@@ -48,13 +51,13 @@ public class PDFConverter {
 			}
 			else {
 				// convert to PDF
-				XHTMLToPDFConverter.outputFileList.add(pdfConverter.convertToPDF(xhtmlFilePath, outputFolder));
+				XHTMLToPDFConverter.outputPDFFileList.add(pdfConverter.convertToPDF(xhtmlFilePath, outputFolder));
 			}
 		}
 		
 		// Zip files
 		Zipper zipper = new Zipper();
-		zipper.zipFiles(XHTMLToPDFConverter.outputFileList, outputFolder);
+		zipper.zipFiles(XHTMLToPDFConverter.outputPDFFileList, outputFolder);
 	}
 	
 	public static void main(String[] args) {
